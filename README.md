@@ -3,9 +3,9 @@ vim-textobj-path
 
 This Vim plugin provides text objects for file paths.
 
-ap selects the next path including the trailing whitespaces and ip selects the next path without the spaces.
+ap selects the next path not including the basename and ip selects the next path including the basename.
 
-aP selects the previous path including the trailing whitespaces and iP selects the previous path without the trailing whitespaces.
+aP selects the previous path not including the basename and iP selects the previous path including the basename.
 
 This plugin depends on the [textobj-user][1] plugin.
 
