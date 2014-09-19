@@ -23,7 +23,7 @@
 " }}}
 
 let s:textobj_path_regex_i = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+'
-let s:textobj_path_regex_a = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+\s*'
+let s:textobj_path_regex_a = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+/'
 
 " Interface  "{{{1
 function! textobj#path#select_ap()  "{{{2
@@ -50,19 +50,23 @@ function! s:MatchNextPath(regex)  "{{{2
   endif
 
   let l:orig_pos = getpos(".")
+  Decho l:orig_pos
 
   let l:head = s:SearchPathStart()
   let l:start = getpos(".")
+  Decho l:start
   call setpos('.', l:start)
 
   let l:ret = s:SearchPattern(a:regex)
   if len(l:ret) == 0
     return []
   endif
+  Decho l:ret
 
   " If the match is in the previous line or the cursor is at a position after
   " the match, search again for the next match.
   if l:ret[1][1] < l:orig_pos[1] || l:ret[1][2] < l:orig_pos[2]
+    call setpos('.', l:orig_pos)
     let l:ret = s:SearchPattern(a:regex)
     if len(l:ret) == 0
       return []
@@ -113,7 +117,6 @@ endfunction
 
 function! s:SearchPattern(regex)  "{{{2
   let [l:line, l:head] = searchpos(a:regex, 'cW', line("$"), 100)
-  Decho l:line . ", " . l:head
   if l:head == 0
     return []
   endif
