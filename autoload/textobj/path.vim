@@ -50,18 +50,15 @@ function! s:MatchNextPath(regex)  "{{{2
   endif
 
   let l:orig_pos = getpos(".")
-  Decho l:orig_pos
 
   let l:head = s:SearchPathStart()
   let l:start = getpos(".")
-  Decho l:start
   call setpos('.', l:start)
 
   let l:ret = s:SearchPattern(a:regex)
   if len(l:ret) == 0
     return []
   endif
-  Decho l:ret
 
   " If the match is in the previous line or the cursor is at a position after
   " the match, search again for the next match.
