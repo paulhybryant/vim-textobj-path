@@ -51,9 +51,7 @@ function! s:MatchNextPath(regex)  "{{{2
 
   let l:orig_pos = getpos(".")
 
-  " Search backward for the first whitespace character in current line and use
-  " that as the starting point for search. Stay where the cursor is if not found
-  let l:head = search('[^0-9a-zA-Z_\-\.\/]\/[^\/]\|^\/[^\/]', 'bcW', line("."), 100)
+  let l:head = s:SearchPathStart()
   let l:start = getpos(".")
   call setpos('.', l:start)
 
@@ -62,7 +60,9 @@ function! s:MatchNextPath(regex)  "{{{2
     return []
   endif
 
-  if l:ret[1][2] < l:orig_pos[2]
+  " If the match is in the previous line or the cursor is at a position after
+  " the match, search again for the next match.
+  if l:ret[1][1] < l:orig_pos[1] || l:ret[1][2] < l:orig_pos[2]
     let l:ret = s:SearchPattern(a:regex)
     if len(l:ret) == 0
       return []
@@ -91,9 +91,7 @@ function! textobj#path#select_iP()  "{{{2
 endfunction
 
 function! s:MatchPrevPath(regex)  "{{{2
-  " Search backward for the first whitespace character in current line and use
-  " that as the starting point for search. Stay where the cursor is if not found
-  let l:head = search('[^0-9a-zA-Z_\-\.\/]\/[^\/]\|^\/[^\/]', 'bcW', line("."), 100)
+  let l:head = s:SearchPathStart()
   if l:head == 0
     return []
   endif
@@ -106,15 +104,23 @@ function! s:MatchPrevPath(regex)  "{{{2
   return ['v', l:ret[0], l:ret[1]]
 endfunction
 
+" Search backward for the first non-path character followed by a '/' or a '/' at
+" the start of the line as the starting point for search.
+" Stay where the cursor is if not found
+function! s:SearchPathStart()  "{{{2
+  return search('[^0-9a-zA-Z_\-\.\/]\/[^\/]\|^\/[^\/]', 'bcW', 1, 100)
+endfunction
+
 function! s:SearchPattern(regex)  "{{{2
-  let [l:line, l:head] = searchpos(a:regex, 'cW', line("."), 100)
+  let [l:line, l:head] = searchpos(a:regex, 'cW', line("$"), 100)
+  Decho l:line . ", " . l:head
   if l:head == 0
     return []
   endif
   call cursor(l:line, l:head)
   let l:begin = getpos(".")
 
-  let [l:line, l:tail] = searchpos(a:regex, 'ceW', line("."), 100)
+  let [l:line, l:tail] = searchpos(a:regex, 'ceW', line("$"), 100)
   call cursor(l:line, l:tail)
   let l:end = getpos(".")
   return [l:begin, l:end]
