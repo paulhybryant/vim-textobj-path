@@ -27,9 +27,13 @@ if exists('g:loaded_textobj_path')
 endif
 
 call textobj#user#plugin('path', {
-\      '-': {
-\        'select-a': 'ap', '*select-a-function*': 'textobj#path#select_a',
-\        'select-i': 'ip', '*select-i-function*': 'textobj#path#select_i',
+\      'next_path': {
+\        'select-a': 'ap', '*select-a-function*': 'textobj#path#select_ap',
+\        'select-i': 'ip', '*select-i-function*': 'textobj#path#select_ip',
+\      },
+\      'prev_path': {
+\        'select-a': 'aP', '*select-a-function*': 'textobj#path#select_aP',
+\        'select-i': 'iP', '*select-i-function*': 'textobj#path#select_iP',
 \      },
 \    })
 

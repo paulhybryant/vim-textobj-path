@@ -26,8 +26,8 @@ let s:textobj_path_regex_i = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+'
 let s:textobj_path_regex_a = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+\s*'
 
 " Interface  "{{{1
-function! textobj#path#select_a()  "{{{2
-  let l:ret = s:MatchPath(s:textobj_path_regex_a)
+function! textobj#path#select_ap()  "{{{2
+  let l:ret = s:MatchNextPath(s:textobj_path_regex_a)
   if len(l:ret) == 0
     return 0
   else
@@ -35,8 +35,8 @@ function! textobj#path#select_a()  "{{{2
   endif
 endfunction
 
-function! textobj#path#select_i()  "{{{2
-  let l:ret = s:MatchPath(s:textobj_path_regex_i)
+function! textobj#path#select_ip()  "{{{2
+  let l:ret = s:MatchNextPath(s:textobj_path_regex_i)
   if len(l:ret) == 0
     return 0
   else
@@ -44,7 +44,7 @@ function! textobj#path#select_i()  "{{{2
   endif
 endfunction
 
-function! s:MatchPath(regex)
+function! s:MatchNextPath(regex)  "{{{2
   if empty(getline('.'))
     return []
   endif
@@ -72,7 +72,41 @@ function! s:MatchPath(regex)
   return ['v', l:ret[0], l:ret[1]]
 endfunction
 
-function! s:SearchPattern(regex)
+function! textobj#path#select_aP()  "{{{2
+  let l:ret = s:MatchPrevPath(s:textobj_path_regex_a)
+  if len(l:ret) == 0
+    return 0
+  else
+    return l:ret
+  endif
+endfunction
+
+function! textobj#path#select_iP()  "{{{2
+  let l:ret = s:MatchPrevPath(s:textobj_path_regex_i)
+  if len(l:ret) == 0
+    return 0
+  else
+    return l:ret
+  endif
+endfunction
+
+function! s:MatchPrevPath(regex)  "{{{2
+  " Search backward for the first whitespace character in current line and use
+  " that as the starting point for search. Stay where the cursor is if not found
+  let l:head = search('[^0-9a-zA-Z_\-\.\/]\/[^\/]\|^\/[^\/]', 'bcW', line("."), 100)
+  if l:head == 0
+    return []
+  endif
+
+  let l:ret = s:SearchPattern(a:regex)
+  if len(l:ret) == 0
+    return []
+  endif
+
+  return ['v', l:ret[0], l:ret[1]]
+endfunction
+
+function! s:SearchPattern(regex)  "{{{2
   let [l:line, l:head] = searchpos(a:regex, 'cW', line("."), 100)
   if l:head == 0
     return []
