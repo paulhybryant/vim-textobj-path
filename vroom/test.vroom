@@ -8,6 +8,7 @@ Test environment setup.
   > :runtime! plugin/textobj/path.vim<CR>
 
 Test plugin loaded
+  @system
   > :echomsg g:loaded_textobj_path<CR>
   ~ 1
 
