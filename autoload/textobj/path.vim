@@ -22,36 +22,67 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 
-let s:textobj_path_regex_i = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+'
-let s:textobj_path_regex_a = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+/'
+let s:textobj_regex_path_i = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+'
+let s:textobj_regex_path_a = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+/'
+let s:textobj_regex_path_start = '[^0-9a-zA-Z_\-\.\/]\/[^\/]\|^\/[^\/]'
 
-" Interface  "{{{1
-function! textobj#path#select_ap()  "{{{2
-  let l:ret = s:MatchNextPath(s:textobj_path_regex_a)
+""
+" @public
+function! textobj#path#select_ip()  "{{{1
+  let l:ret = s:MatchNextPath(s:textobj_regex_path_i)
   if len(l:ret) == 0
     return 0
   else
     return l:ret
   endif
 endfunction
+"}}}1
 
-function! textobj#path#select_ip()  "{{{2
-  let l:ret = s:MatchNextPath(s:textobj_path_regex_i)
+""
+" @public
+function! textobj#path#select_iP()  "{{{1
+  let l:ret = s:MatchPrevPath(s:textobj_regex_path_i)
   if len(l:ret) == 0
     return 0
   else
     return l:ret
   endif
 endfunction
+"}}}1
 
-function! s:MatchNextPath(regex)  "{{{2
+""
+" @public
+function! textobj#path#select_ap()  "{{{1
+  let l:ret = s:MatchNextPath(s:textobj_regex_path_a)
+  if len(l:ret) == 0
+    return 0
+  else
+    return l:ret
+  endif
+endfunction
+"}}}1
+
+""
+" @public
+function! textobj#path#select_aP()  "{{{1
+  let l:ret = s:MatchPrevPath(s:textobj_regex_path_a)
+  if len(l:ret) == 0
+    return 0
+  else
+    return l:ret
+  endif
+endfunction
+"}}}1
+
+""
+" @private
+" Search forward for the next file system path.
+function! s:MatchNextPath(regex)  "{{{1
   if empty(getline('.'))
     return []
   endif
 
   let l:orig_pos = getpos(".")
-
-  let l:head = s:SearchPathStart()
   let l:start = getpos(".")
   call setpos('.', l:start)
 
@@ -72,26 +103,12 @@ function! s:MatchNextPath(regex)  "{{{2
 
   return ['v', l:ret[0], l:ret[1]]
 endfunction
+"}}}1
 
-function! textobj#path#select_aP()  "{{{2
-  let l:ret = s:MatchPrevPath(s:textobj_path_regex_a)
-  if len(l:ret) == 0
-    return 0
-  else
-    return l:ret
-  endif
-endfunction
-
-function! textobj#path#select_iP()  "{{{2
-  let l:ret = s:MatchPrevPath(s:textobj_path_regex_i)
-  if len(l:ret) == 0
-    return 0
-  else
-    return l:ret
-  endif
-endfunction
-
-function! s:MatchPrevPath(regex)  "{{{2
+""
+" @private
+" Search backward for the next file system path.
+function! s:MatchPrevPath(regex)  "{{{1
   let l:head = s:SearchPathStart()
   if l:head == 0
     return []
@@ -104,15 +121,25 @@ function! s:MatchPrevPath(regex)  "{{{2
 
   return ['v', l:ret[0], l:ret[1]]
 endfunction
+"}}}1
 
-" Search backward for the first non-path character followed by a '/' or a '/' at
-" the start of the line as the starting point for search.
-" Stay where the cursor is if not found
-function! s:SearchPathStart()  "{{{2
-  return search('[^0-9a-zA-Z_\-\.\/]\/[^\/]\|^\/[^\/]', 'bcW', 1, 100)
+""
+" @private
+" Searches backward for the first non-path character followed by a '/' or a
+" '/' at the start of the line as the starting point for search.  Move the
+" cursor to the location if found, or do not move the cursor otherwise.
+function! s:SearchPathStart()  "{{{1
+  return search(s:textobj_regex_path_start, 'bcW', 1, 100)
 endfunction
+"}}}1
 
-function! s:SearchPattern(regex)  "{{{2
+""
+" @private
+" Search for pattern specified by the {regex} argument, returns an empty list
+" if not found. Returns a list with two elements representing the start and
+" end of the found patter, and the cursor will be moved to the end of the
+" found match.
+function! s:SearchPattern(regex)  "{{{1
   let [l:line, l:head] = searchpos(a:regex, 'cW', line("$"), 100)
   if l:head == 0
     return []
@@ -125,6 +152,6 @@ function! s:SearchPattern(regex)  "{{{2
   let l:end = getpos(".")
   return [l:begin, l:end]
 endfunction
+"}}}1
 
-" __END__  "{{{1
 " vim: foldmethod=marker
