@@ -1,7 +1,7 @@
 " textobj-path - Text objects for file paths
 " Version: 0.0.1
 " Copyright (C) 2014 Yu Huang
-" License: So-called MIT/X license  {{{
+" License: So-called MIT/X license
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
 "     "Software"), to deal in the Software without restriction, including
@@ -20,7 +20,6 @@
 "     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
 
 let s:textobj_regex_path_i = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+'
 let s:textobj_regex_path_a = '\(\/\([0-9a-zA-Z_\-\.]\+\)\)\+/'
